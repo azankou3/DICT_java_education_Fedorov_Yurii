@@ -8,9 +8,10 @@ public class Hangman {
         int randomIndex = random.nextInt(WordData.length);
         String randomWord = WordData[randomIndex];
 
+        String word = randomWord.substring(0, 2) + randomWord.substring(2).replaceAll(".","-");
 
         System.out.println("HANGMAN");
-        System.out.print("Guess the word: > ");
+        System.out.print("Guess the word: "+ word +" > ");
         Scanner input = new Scanner(System.in);
         String choice = input.nextLine();
         choice = choice.toLowerCase();
