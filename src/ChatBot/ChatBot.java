@@ -20,5 +20,12 @@ public class ChatBot {
         int reminder7 = input.nextInt();
         var age = (reminder3 * 70 + reminder5 * 21 + reminder7 * 15) % 105;
         System.out.println("Your age is " + age + "; that`s a good time to start programming!");
+        System.out.println("Now I will prove to you that i can count to any number you want!");
+        System.out.println("Enter number:");
+        int count = input.nextInt();
+        for (int i = 1; i <= count; i++){
+            System.out.println(i + " !");
+        }
+
     }
 }
