@@ -23,9 +23,23 @@ public class ChatBot {
         System.out.println("Now I will prove to you that i can count to any number you want!");
         System.out.println("Enter number:");
         int count = input.nextInt();
-        for (int i = 1; i <= count; i++){
+        for (int i = 0; i <= count; i++){
             System.out.println(i + " !");
         }
-
+        System.out.println("Choose correct answer!");
+        System.out.println("1. Wrong answer");
+        System.out.println("2. Wrong answer");
+        System.out.println("3. Correct answer");
+        System.out.println("4. Wrong answer");
+        while (true) {
+            int choice = input.nextInt();
+            if (choice != 3) {
+                System.out.println("Wrong");
+            } else{
+                System.out.println("Correct");
+                break;
+            }
+        }
+        System.out.println("Goodbye, have a nice day!");
     }
 }
