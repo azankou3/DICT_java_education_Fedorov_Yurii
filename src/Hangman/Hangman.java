@@ -7,18 +7,59 @@ public class Hangman {
         Random random = new Random();
         int randomIndex = random.nextInt(WordData.length);
         String randomWord = WordData[randomIndex];
-
-        String word = randomWord.substring(0, 2) + randomWord.substring(2).replaceAll(".","-");
-
+        int hp = 8;
+        int hpLeft = hp;
+        boolean[] guessed = new boolean[randomWord.length()];
+        int lengthOfWord = randomWord.length();
+        int lengthOfGuess = 0;
         System.out.println("HANGMAN");
-        System.out.print("Guess the word: "+ word +" > ");
-        Scanner input = new Scanner(System.in);
-        String choice = input.nextLine();
-        choice = choice.toLowerCase();
-        if (choice.equals(randomWord)){
-            System.out.println("You survived!");
-        } else {
-            System.out.println("You lost!");
+        while(hp > 0) {
+            System.out.print("Word: ");
+            for (int i = 0; i < randomWord.length(); i++) {
+                if (guessed[i]) {
+                    System.out.print(randomWord.charAt(i));
+                } else {
+                    System.out.print("-");
+                }
+            }
+            System.out.println();
+            System.out.print("Input letter: ");
+            Scanner scanner = new Scanner(System.in);
+            String input = scanner.next().toLowerCase();
+
+            if (input.length() != 1 || !Character.isLetter(input.charAt(0))) {
+                System.out.println("Enter one letter.");
+                continue;
+            }
+
+            System.out.println();
+            char guess = input.charAt(0);
+            boolean letterGuessed = false;
+
+            for (int i = 0; i < randomWord.length(); i++) {
+                if (randomWord.charAt(i) == guess) {
+                    guessed[i] = true;
+                    letterGuessed = true;
+                    lengthOfGuess++;
+
+                }
+            }
+            if (letterGuessed) {
+                System.out.print("");
+            } else {
+                System.out.println("That letter doesn`t appear in the word.");
+                hpLeft--;
+            }
+            System.out.println("Attempts left: " + hpLeft);
+
+            System.out.println();
+            if (lengthOfGuess == lengthOfWord) {
+                System.out.println("You survived");
+                break;
+            } else if (hpLeft <= 0) {
+                System.out.println("You lose!");
+                break;
+            }
         }
     }
 }
