@@ -37,6 +37,13 @@ public class Hangman {
             boolean letterGuessed = false;
 
             for (int i = 0; i < randomWord.length(); i++) {
+                if (randomWord.charAt(i) == guess){
+                    if(guessed[i]){
+                        System.out.println("No improvements");
+                        hpLeft--;
+                        lengthOfGuess--;
+                    }
+                }
                 if (randomWord.charAt(i) == guess) {
                     guessed[i] = true;
                     letterGuessed = true;
