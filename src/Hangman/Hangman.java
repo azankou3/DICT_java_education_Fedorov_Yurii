@@ -1,4 +1,5 @@
 package Hangman;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Random;
 public class Hangman {
@@ -8,11 +9,12 @@ public class Hangman {
         int randomIndex = random.nextInt(WordData.length);
         String randomWord = WordData[randomIndex];
         int hp = 8;
-        int hpLeft = hp;
         boolean[] guessed = new boolean[randomWord.length()];
         int lengthOfWord = randomWord.length();
         int lengthOfGuess = 0;
+        Scanner scanner = new Scanner(System.in);
         System.out.println("HANGMAN");
+        ArrayList allGuessedLetters = new ArrayList<>();
         while(hp > 0) {
             System.out.print("Word: ");
             for (int i = 0; i < randomWord.length(); i++) {
@@ -24,49 +26,45 @@ public class Hangman {
             }
             System.out.println();
             System.out.print("Input letter: ");
-            Scanner scanner = new Scanner(System.in);
-            String input = scanner.next().toLowerCase();
-
-            if (input.length() != 1 || !Character.isLetter(input.charAt(0))) {
-                System.out.println("Enter one letter.");
+            String input = scanner.next();
+            if (input.length() != 1) {
+                System.out.println("You should input a single letter.");
+                continue;
+            } else if (!input.matches("[a-z]")) {
+                System.out.println("Please enter a lowercase English letter");
                 continue;
             }
-
-            System.out.println();
-            char guess = input.charAt(0);
-            boolean letterGuessed = false;
-
-            for (int i = 0; i < randomWord.length(); i++) {
-                if (randomWord.charAt(i) == guess){
-                    if(guessed[i]){
-                        System.out.println("No improvements");
-                        hpLeft--;
-                        lengthOfGuess--;
+            if (allGuessedLetters.contains(input)){
+                System.out.println("Already guessed letter");
+                lengthOfGuess = lengthOfGuess - 1;
+            } else {
+                if (!allGuessedLetters.contains(input)){
+                    allGuessedLetters.add(input);
+                }
+                System.out.print("");
+            }
+            if (!randomWord.contains(input)){
+                hp = hp - 1;
+            }else {
+                for (int i = 0; i < randomWord.length(); i++) {
+                    char ch = randomWord.charAt(i);
+                    char inCh = input.charAt(0);
+                    boolean answ = ch == inCh;
+                    if (answ){
+                        guessed[i] = true;
+                        lengthOfGuess++;
                     }
                 }
-                if (randomWord.charAt(i) == guess) {
-                    guessed[i] = true;
-                    letterGuessed = true;
-                    lengthOfGuess++;
-
-                }
             }
-            if (letterGuessed) {
-                System.out.print("");
-            } else {
-                System.out.println("That letter doesn`t appear in the word.");
-                hpLeft--;
-            }
-            System.out.println("Attempts left: " + hpLeft);
-
-            System.out.println();
+            System.out.println("Attempts left: " + hp);
             if (lengthOfGuess == lengthOfWord) {
                 System.out.println("You survived");
                 break;
-            } else if (hpLeft <= 0) {
+            } else if (hp <= 0) {
                 System.out.println("You lose!");
                 break;
             }
+
         }
     }
 }
