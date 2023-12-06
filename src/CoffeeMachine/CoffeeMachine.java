@@ -1,6 +1,5 @@
 package CoffeeMachine;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import CoffeeMachine.Coffee;
@@ -8,101 +7,201 @@ import CoffeeMachine.Coffee;
 public class CoffeeMachine {
 
     static class CoffeeMachineResources extends Coffee.CoffeeType {
-        public CoffeeMachineResources(int Water, int Milk, int CoffeeBeans){
-            super(Water, Milk, CoffeeBeans);
+        public CoffeeMachineResources(int Water, int Milk, int CoffeeBeans, int Money, int Cups){
+            super(Water, Milk, CoffeeBeans, Money, Cups);
         }
     }
     static class coffeetype1 extends Coffee.CoffeeType {
-        public coffeetype1(int Water, int Milk, int CoffeeBeans) {
-            super(Water, Milk, CoffeeBeans);
+        public coffeetype1(int Water, int Milk, int CoffeeBeans, int Price, int Cups) {
+            super(Water, Milk, CoffeeBeans, Price, Cups);
         }
     }
 
     public static void main(String[] args){
 
         Scanner scanner = new Scanner(System.in);
+        boolean work = true;
 
-        System.out.println("Write how many ml of water the coffee machine has: ");
-        int Water = scanner.nextInt();
-        System.out.println("Write how many ml of milk the coffee machine has: ");
-        int Milk = scanner.nextInt();
-        System.out.println("Write how many grams of coffee beans the coffee machine has: ");
-        int CoffeeBeans = scanner.nextInt();
-        System.out.println("Write how many cups of coffee you will need: ");
-        int cups = scanner.nextInt();
+        int water = 400;
+        int milk = 540;
+        int coffeeBeans = 120;
+        int money = 550;
+        int cupsInMachine = 9;
 
-        CoffeeMachineResources Machine = new CoffeeMachineResources(Water, Milk, CoffeeBeans);
+        CoffeeMachineResources Machine = new CoffeeMachineResources(water, milk, coffeeBeans, money, cupsInMachine);
 
-        int machineWater = Machine.getWater();
-        int machineMilk = Machine.getMilk();
-        int machineCoffeeBeans = Machine.getCoffeeBeans();
+        while (work) {
+            System.out.println("Write action: (buy, fill, take) ");
+            System.out.print("> ");
+            String action = scanner.nextLine();
+
+            switch (action) {
+                case "take":
+                    System.out.println("I gave you " + Machine.getPrice() + " ");
+                    Machine.setPrice(0);
+                    break;
+                case "buy":
+                    // Логіка покупки кави тут
+                    coffeetype1 Espresso = new coffeetype1(250, 0, 16,4, 1);
+                    coffeetype1 Latte = new coffeetype1(350, 75, 20, 7, 1);
+                    coffeetype1 Cappuccino = new coffeetype1(200, 100, 12, 6, 1);
+
+                    coffeetype1[] CoffeeArray ={Espresso, Latte, Cappuccino};
+                    System.out.println("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino:");
+                    System.out.print(">");
+                    int chooseCoffee = scanner.nextInt();
+                    int CoffeeIndex = chooseCoffee -1;
+
+                    System.out.println("Write how many cups of coffee you will need: ");
+                    int cups = scanner.nextInt();
+                    scanner.nextLine();
+                    if (cups > Machine.getCups()){
+                        System.out.println("not enough cups");
+                        break;
+                    }
+
+                    int FOCWater = CoffeeArray[CoffeeIndex].getWater(); // FOC - For one cup
+                    int FOCMilk = CoffeeArray[CoffeeIndex].getMilk();
+                    int FOCCoffeeBeans = CoffeeArray[CoffeeIndex].getCoffeeBeans();
+                    int FOCPrice = CoffeeArray[CoffeeIndex].getPrice();
 
 
+                    HashMap<String, Integer> Maxcups = new HashMap<>();
+                    if (FOCMilk == 0 ){
+                        FOCMilk = 1;
+                    }
+                    Maxcups.put("Water", (Machine.getWater() / FOCWater));
+                    Maxcups.put("Milk", (Machine.getMilk() / FOCMilk));
+                    Maxcups.put("CoffeeBeans", (Machine.getCoffeeBeans() / FOCCoffeeBeans));
 
-        coffeetype1 coffee1 = new coffeetype1(150, 50, 15);
+                    int xw = Maxcups.get("Water");
+                    int xm = Maxcups.get("Milk");
+                    int xc = Maxcups.get("CoffeeBeans");
+                    int x = xw;
+                    int[] min= {xw,xm,xc};
+                    for (int i = 0; i < min.length ;i++){
+                        if (x > min[i]){
+                            x=min[i];
+                        }
+                    }
+                    HashMap<String, Integer> ForAllCups = new HashMap<>();
 
-        int FOCWater = coffee1.getWater(); // FOC - For one cup
-        int FOCMilk = coffee1.getMilk();
-        int FOCCoffeeBeans = coffee1.getCoffeeBeans();
+                    ForAllCups.put("Water", (FOCWater * cups));
+                    ForAllCups.put("Milk", (FOCMilk * cups));
+                    ForAllCups.put("CoffeeBeans", (FOCCoffeeBeans * cups));
 
-        HashMap<String, Integer> Maxcups = new HashMap<>();
-        Maxcups.put("Water", (machineWater / FOCWater));
-        Maxcups.put("Milk", (machineMilk / FOCMilk));
-        Maxcups.put("CoffeeBeans", (machineCoffeeBeans / FOCCoffeeBeans));
+                    int FACWater = ForAllCups.get("Water");
+                    int FACMilk = ForAllCups.get("Milk");
+                    int FACCoffeeBeans = ForAllCups.get("CoffeeBeans");
+                    int FACPrice = FOCPrice * cups;
 
-        int xw = Maxcups.get("Water");
-        int xm = Maxcups.get("Milk");
-        int xc = Maxcups.get("CoffeeBeans");
-        int x = xw;
-        int[] min= {xw,xm,xc};
-        for (int i = 0; i < min.length ;i++){
-            if (x > min[i]){
-                x=min[i];
+                    if (Machine.getWater() < FACWater){
+                        System.out.println("Not enough water");
+                        break;
+                    }
+                    if (Machine.getMilk() < FACMilk){
+                        System.out.println("Not enough milk");
+                        break;
+                    }
+                    if (Machine.getCoffeeBeans() < FACCoffeeBeans){
+                        System.out.println("Not enough Coffee beans");
+                        break;
+                    }
+                    // Перевірка наявності ресурсів перед виконанням операції
+                    int errors = 0;
+                    if (Machine.getCups() <= 0) {
+                        System.out.println("Not enough cups");
+                        errors = errors + 1;
+                    }
+                    if (Machine.getWater() < FACWater){
+                        System.out.println("Not enough water");
+                        errors = errors + 1;
+                    }
+                    if (Machine.getMilk() < FACMilk){
+                        System.out.println("Not enough milk");
+                        errors = errors + 1;
+                    }
+                    if (Machine.getCoffeeBeans() < FACCoffeeBeans){
+                        System.out.println("Not enough coffee beans");
+                        errors = errors + 1;
+                    }
+
+                    if (errors == 0){
+                        boolean BooleanWater = FACWater > Machine.getWater();
+                        boolean BooleanMilk = FACMilk > Machine.getMilk();
+                        boolean BooleanCoffeeBeans = FACCoffeeBeans > Machine.getCoffeeBeans();
+
+                        if (!BooleanCoffeeBeans && !BooleanMilk && !BooleanWater){
+                            if (cups < x){
+                                System.out.println("Yes i can make that amount of coffee and even (" + (x - cups)+") more");
+                                Machine.setPrice(Machine.getPrice() + FACPrice);
+                                int mon = Machine.getPrice();
+                                System.out.println(mon + " money in machine");
+                                Machine.setWater(Machine.getWater()- FACWater);
+                                Machine.setMilk(Machine.getMilk() - FACMilk);
+                                Machine.setCoffeeBeans(Machine.getCoffeeBeans() - FACCoffeeBeans);
+                                Machine.setCups(Machine.getCups() - cups);
+                                System.out.println("Water: " + Machine.getWater()+
+                                        "\nMilk: " + Machine.getMilk() +
+                                        "\nCoffee beans: " + Machine.getCoffeeBeans()+
+                                        "\nCups: " + Machine.getCups()+
+                                        "\nMoney: " + Machine.getPrice());
+                            }
+                            if (cups == x) {
+                                System.out.println("Yes i can make that amount of coffee");
+                                Machine.setPrice(Machine.getPrice() + FACPrice);
+                                int mon = Machine.getPrice();
+                                System.out.println(mon + " money in machine");
+                                Machine.setWater(Machine.getWater()- FACWater);
+                                Machine.setMilk(Machine.getMilk() - FACMilk);
+                                Machine.setCoffeeBeans(Machine.getCoffeeBeans() - FACCoffeeBeans);
+                                Machine.setCups(Machine.getCups() - cups);
+                                System.out.println("Water: " + Machine.getWater()+
+                                        "\nMilk: " + Machine.getMilk() +
+                                        "\nCoffee beans: " + Machine.getCoffeeBeans()+
+                                        "\nCups: " + Machine.getCups()+
+                                        "\nMoney: " + Machine.getPrice());
+                            }
+                        }
+                        if (BooleanCoffeeBeans || BooleanMilk || BooleanWater){
+                            System.out.println("No, i can make only " + x +" cups of coffee");
+                        }
+                    }
+
+                    // Інші умови перевірки ресурсів перед покупкою
+
+                    // Якщо все ОК, виконати покупку
+                    // ваша логіка покупки кави тут
+
+                    break;
+                case "fill":
+                    System.out.println("Write how many ml of water the coffee machine has: ");
+                    int Water = scanner.nextInt();
+                    System.out.println("Write how many ml of milk the coffee machine has: ");
+                    int Milk = scanner.nextInt();
+                    System.out.println("Write how many grams of coffee beans the coffee machine has: ");
+                    int CoffeeBeans = scanner.nextInt();
+                    System.out.println("Write how many cups in the machine: ");
+                    int machineCups = scanner.nextInt();
+
+                    Machine.setWater(Machine.getWater() + Water);
+                    Machine.setMilk(Machine.getMilk() + Milk);
+                    Machine.setCoffeeBeans(Machine.getCoffeeBeans() + CoffeeBeans);
+                    Machine.setCups(Machine.getCups() + machineCups);
+
+                    System.out.println("The coffee machine has:");
+                    System.out.println(Machine.getWater() + " ml of water");
+                    System.out.println(Machine.getMilk() + " ml of milk");
+                    System.out.println(Machine.getCoffeeBeans() + " g of coffee beans");
+                    System.out.println(Machine.getCups() + " of disposable cups");
+                    System.out.println(Machine.getPrice() + " of money");
+                    scanner.nextLine();
+
+                    break;
+                default:
+                    System.out.println("Invalid action");
+                    break;
             }
-        }
-//        System.out.println("Min cups is = " + x);
-//        System.out.println("MaxCUPS Amount " + Maxcups);
-
-        HashMap<String, Integer> ForAllCups = new HashMap<>();
-
-        ForAllCups.put("Water", (FOCWater * cups));
-        ForAllCups.put("Milk", (FOCMilk * cups));
-        ForAllCups.put("CoffeeBeans", (FOCCoffeeBeans * cups));
-
-//        System.out.println(ForAllCups);
-
-        int FACWater = ForAllCups.get("Water");
-        int FACMilk = ForAllCups.get("Milk");
-        int FACCoffeeBeans = ForAllCups.get("CoffeeBeans");
-
-        boolean BooleanWater = FACWater > machineWater;
-        boolean BooleanMilk = FACMilk > machineMilk;
-        boolean BooleanCoffeeBeans = FACCoffeeBeans > machineCoffeeBeans;
-        boolean admin = false;
-        if (admin) {
-            if (BooleanWater) {
-                System.out.println("Need refill water");
-                System.out.println("Need " + Math.abs(machineWater - FACWater) + " ml more");
-            }
-            if (BooleanMilk) {
-                System.out.println("Need refill milk");
-                System.out.println("Need " + Math.abs(machineMilk - FACMilk) + " ml more");
-            }
-            if (BooleanCoffeeBeans) {
-                System.out.println("Need refill Coffee beans");
-                System.out.println("Need " + Math.abs(machineCoffeeBeans - FACCoffeeBeans) + " g more");
-            }
-        }
-        if (!BooleanCoffeeBeans && !BooleanMilk && !BooleanWater){
-            if (cups < x){
-                System.out.println("Yes i can make that amount of coffee and even (" + (x - cups)+") more");
-            }
-            if (cups == x) {
-                System.out.println("Yes i can make that amount of coffee");
-            }
-        }
-        if (BooleanCoffeeBeans && BooleanMilk && BooleanWater){
-            System.out.println("No, i can make only " + x +" cups of coffee");
         }
     }
 }
