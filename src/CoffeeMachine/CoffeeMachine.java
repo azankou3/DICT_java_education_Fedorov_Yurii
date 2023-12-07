@@ -31,7 +31,7 @@ public class CoffeeMachine {
         CoffeeMachineResources Machine = new CoffeeMachineResources(water, milk, coffeeBeans, money, cupsInMachine);
 
         while (work) {
-            System.out.println("Write action: (buy, fill, take) ");
+            System.out.println("Write action: (buy, fill, take, remaining, exit) ");
             System.out.print("> ");
             String action = scanner.nextLine();
 
@@ -47,9 +47,29 @@ public class CoffeeMachine {
                     coffeetype1 Cappuccino = new coffeetype1(200, 100, 12, 6, 1);
 
                     coffeetype1[] CoffeeArray ={Espresso, Latte, Cappuccino};
-                    System.out.println("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino:");
+                    System.out.println("What do you want to buy? 1 - espresso, 2 - latte, " +
+                            "3 - cappuccino, back - to main menu :");
                     System.out.print(">");
-                    int chooseCoffee = scanner.nextInt();
+                    String input = scanner.nextLine();
+                    if (input.matches("back")){
+                        break;
+                    }
+
+                    int chooseCoffee = 1;
+
+                    if (input.matches(".*\\d.*")){
+                        try {
+                            chooseCoffee = Integer.parseInt(input);
+                            if (chooseCoffee < 1 || chooseCoffee >3){
+                                System.out.println("Please enter a number from 1 to 3");
+                                break;
+                            }
+                        }catch (NumberFormatException e){
+                            System.out.println("Pleas enter valid number");
+                        }
+
+                    }
+
                     int CoffeeIndex = chooseCoffee -1;
 
                     System.out.println("Write how many cups of coffee you will need: ");
@@ -95,18 +115,6 @@ public class CoffeeMachine {
                     int FACCoffeeBeans = ForAllCups.get("CoffeeBeans");
                     int FACPrice = FOCPrice * cups;
 
-                    if (Machine.getWater() < FACWater){
-                        System.out.println("Not enough water");
-                        break;
-                    }
-                    if (Machine.getMilk() < FACMilk){
-                        System.out.println("Not enough milk");
-                        break;
-                    }
-                    if (Machine.getCoffeeBeans() < FACCoffeeBeans){
-                        System.out.println("Not enough Coffee beans");
-                        break;
-                    }
                     // Перевірка наявності ресурсів перед виконанням операції
                     int errors = 0;
                     if (Machine.getCups() <= 0) {
@@ -135,37 +143,27 @@ public class CoffeeMachine {
                             if (cups < x){
                                 System.out.println("Yes i can make that amount of coffee and even (" + (x - cups)+") more");
                                 Machine.setPrice(Machine.getPrice() + FACPrice);
-                                int mon = Machine.getPrice();
-                                System.out.println(mon + " money in machine");
                                 Machine.setWater(Machine.getWater()- FACWater);
                                 Machine.setMilk(Machine.getMilk() - FACMilk);
                                 Machine.setCoffeeBeans(Machine.getCoffeeBeans() - FACCoffeeBeans);
                                 Machine.setCups(Machine.getCups() - cups);
-                                System.out.println("Water: " + Machine.getWater()+
-                                        "\nMilk: " + Machine.getMilk() +
-                                        "\nCoffee beans: " + Machine.getCoffeeBeans()+
-                                        "\nCups: " + Machine.getCups()+
-                                        "\nMoney: " + Machine.getPrice());
+
                             }
                             if (cups == x) {
                                 System.out.println("Yes i can make that amount of coffee");
                                 Machine.setPrice(Machine.getPrice() + FACPrice);
-                                int mon = Machine.getPrice();
-                                System.out.println(mon + " money in machine");
                                 Machine.setWater(Machine.getWater()- FACWater);
                                 Machine.setMilk(Machine.getMilk() - FACMilk);
                                 Machine.setCoffeeBeans(Machine.getCoffeeBeans() - FACCoffeeBeans);
                                 Machine.setCups(Machine.getCups() - cups);
-                                System.out.println("Water: " + Machine.getWater()+
-                                        "\nMilk: " + Machine.getMilk() +
-                                        "\nCoffee beans: " + Machine.getCoffeeBeans()+
-                                        "\nCups: " + Machine.getCups()+
-                                        "\nMoney: " + Machine.getPrice());
+
                             }
                         }
                         if (BooleanCoffeeBeans || BooleanMilk || BooleanWater){
                             System.out.println("No, i can make only " + x +" cups of coffee");
                         }
+                    }else if (errors > 0){
+                        System.out.println("No, i can make only " + x +" cups of coffee");
                     }
 
                     // Інші умови перевірки ресурсів перед покупкою
@@ -195,8 +193,20 @@ public class CoffeeMachine {
                     System.out.println(Machine.getCoffeeBeans() + " g of coffee beans");
                     System.out.println(Machine.getCups() + " of disposable cups");
                     System.out.println(Machine.getPrice() + " of money");
+
                     scanner.nextLine();
 
+                    break;
+                case "exit":
+                    work = false;
+                    break;
+                case "remaining":
+                    System.out.println("The coffee machine has:");
+                    System.out.println(Machine.getWater() + " ml of water");
+                    System.out.println(Machine.getMilk() + " ml of milk");
+                    System.out.println(Machine.getCoffeeBeans() + " g of coffee beans");
+                    System.out.println(Machine.getCups() + " of disposable cups");
+                    System.out.println(Machine.getPrice() + " of money");
                     break;
                 default:
                     System.out.println("Invalid action");
